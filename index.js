@@ -67,6 +67,17 @@ io.on('connection', socket => {
         // Ideally emit a "user left" event here so clients can remove the video
         socket.broadcast.emit('user left', socket.id);
     });
+
+    socket.on("update status", payload => {
+        const roomID = socketToRoom[socket.id];
+        if (roomID) {
+            // Broadcast to everyone else in the room
+            socket.to(roomID).emit("status update", {
+                id: socket.id,
+                ...payload
+            });
+        }
+    });
 });
 
 const PORT = process.env.PORT || 5000;
